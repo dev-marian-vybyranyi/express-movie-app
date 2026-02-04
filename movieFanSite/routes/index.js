@@ -2,9 +2,12 @@ var express = require("express");
 var router = express.Router();
 const request = require("request");
 
-const apiKey = process.env.API_KEY;
-const apiBaseUrl = "https://api.themoviedb.org/3";
-const nowPlayingUrl = `${apiBaseUrl}/movie/now_playing?api_key=${apiKey}`;
+// const apiKey = process.env.API_KEY;
+const apiKey = "123456789";
+// const apiBaseUrl = "https://api.themoviedb.org/3";
+const apiBaseUrl = "http://localhost:3030";
+// const nowPlayingUrl = `${apiBaseUrl}/movie/now_playing?api_key=${apiKey}`;
+const nowPlayingUrl = `${apiBaseUrl}/most_popular?api_key=${apiKey}`;
 const imageBaseUrl = "https://image.tmdb.org/t/p/w300";
 
 router.use((req, res, next) => {
