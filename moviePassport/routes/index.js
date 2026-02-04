@@ -2,10 +2,28 @@ var express = require("express");
 var router = express.Router();
 const request = require("request");
 
+const passport = require("passport");
+const GitHubStrategy = require("passport-github").Strategy;
+
 const apiKey = process.env.API_KEY;
 const apiBaseUrl = "https://api.themoviedb.org/3";
 const nowPlayingUrl = `${apiBaseUrl}/movie/now_playing?api_key=${apiKey}`;
 const imageBaseUrl = "https://image.tmdb.org/t/p/w300";
+
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/auth/github/callback",
+    },
+    function (accessToken, refreshToken, profile, cb) {
+      User.findOrCreate({ githubId: profile.id }, function (err, user) {
+        return cb(err, user);
+      });
+    },
+  ),
+);
 
 router.use((req, res, next) => {
   res.locals.imageBaseUrl = imageBaseUrl;
@@ -21,6 +39,8 @@ router.get("/", function (req, res, next) {
     });
   });
 });
+
+router.get("/login", passport.authenticate("github"));
 
 router.get("/movie/:id", (req, res, next) => {
   const movieId = req.params.id;
