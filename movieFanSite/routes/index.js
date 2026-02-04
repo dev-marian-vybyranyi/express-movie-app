@@ -34,4 +34,26 @@ router.get("/movie/:id", (req, res, next) => {
   });
 });
 
+router.post("/search", (req, res, next) => {
+  const userSearchTerm = encodeURI(req.body.movieSearch);
+  const cat = req.body.cat;
+  const movieUrl = `${apiBaseUrl}/search/${cat}?query=${userSearchTerm}&api_key=${apiKey}`;
+  request.get(movieUrl, (error, response, movieData) => {
+    let parsedData = JSON.parse(movieData);
+    if (
+      cat == "person" &&
+      parsedData.results &&
+      parsedData.results.length > 0
+    ) {
+      parsedData.results = parsedData.results[0].known_for;
+    } else if (cat == "person") {
+      parsedData.results = [];
+    }
+
+    res.render("index", {
+      parsedData: parsedData.results,
+    });
+  });
+});
+
 module.exports = router;
